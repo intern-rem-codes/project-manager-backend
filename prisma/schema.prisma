@@ -1,0 +1,38 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  name  String
+  email String @unique
+}
+
+model Project {
+  id Int @id @default(autoincrement())
+  name  String
+  description String
+  status String
+  deadline String
+  client_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model FileMetadata{
+  id Int @id @default(autoincrement())
+  project_id String
+  file_name String
+  file_path String
+  file_type String
+  file_size Int
+  uploaded_by String
+  updated_at DateTime @updatedAt
+  download_url String 
+}
