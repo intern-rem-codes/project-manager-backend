@@ -1,4 +1,5 @@
 import { Router } from "express";
+import upload from "../middleware/upload";
 import {
   getFileMetadata,
   getFile,
@@ -11,7 +12,7 @@ const router = Router();
 
 router.get("/", getFileMetadata);
 router.get("/:id", getFile);
-router.post("/", createFileMetadata);
+router.post("/", upload.single("file"), createFileMetadata);
 router.put("/:id", updateFileMetadata);
 router.patch("/:id", updateFileMetadata);
 router.delete("/:id", deleteFileMetadata);

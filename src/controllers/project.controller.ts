@@ -17,13 +17,17 @@ export const getProject = async (req: Request, res: Response) => {
 export const createProject = async (req: Request, res: Response) => {
   const data: CreateProjectDTO = req.body;
 
+  const { name, description, deadline } = req.body;
+
   const project = await prisma.project.create({
     data: {
-      name: data.name,
-      description: data.description,
+      name,
+      description,
       status: "",
-      deadline: data.deadline,
+      deadline,
       client_id: "",
+      created_at: new Date(),
+      updated_at: new Date(),
     },
   });
   return res.status(201).json(project);
