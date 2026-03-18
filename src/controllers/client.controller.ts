@@ -43,12 +43,9 @@ export const getClients = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Fout bij ophalen clients" });
   }
 };
-export const getClientById = async (
-  req: Request<{ id: string }>,
-  res: Response,
-) => {
+export const getClientById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
 
     const client = await prisma.client.findUnique({
       where: { id },
@@ -58,17 +55,14 @@ export const getClientById = async (
       return res.status(404).json({ error: "Client niet gevonden" });
     }
 
-    res.json(client);
+    return res.status(200).json(client);
   } catch (error) {
     res.status(500).json({ error: "Fout bij ophalen client" });
   }
 };
-export const updateClient = async (
-  req: Request<{ id: string }, {}, UpdateClientDTO>,
-  res: Response,
-) => {
+export const updateClient = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
 
     const updatedClient = await prisma.client.update({
       where: { id },
@@ -81,7 +75,7 @@ export const updateClient = async (
   }
 };
 export const deleteClient = async (
-  req: Request<{ id: string }>,
+  req: Request<{ id: number }>,
   res: Response,
 ) => {
   try {

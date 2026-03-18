@@ -15,17 +15,15 @@ export const getProject = async (req: Request, res: Response) => {
 };
 
 export const createProject = async (req: Request, res: Response) => {
-  const data: CreateProjectDTO = req.body;
-
-  const { name, description, deadline } = req.body;
+  const { name, description, deadline, status } = req.body;
 
   const project = await prisma.project.create({
     data: {
       name,
       description,
-      status: "",
+      status,
       deadline,
-      client_id: "",
+      client: { connect: { id: 1 } },
       created_at: new Date(),
       updated_at: new Date(),
     },

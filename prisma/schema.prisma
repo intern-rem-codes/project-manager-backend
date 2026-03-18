@@ -2,6 +2,7 @@
 datasource db {
   provider = "sqlite"
 }
+
 generator client {
   provider = "prisma-client-js"
   output   = "../node_modules/.prisma/client"
@@ -13,41 +14,30 @@ model User {
   email String @unique
 }
 
-model Project {
-  id Int @id @default(autoincrement())
-  name  String
-  description String
-  status String
-  deadline String
-  client_id String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-}
-
 model Client {
-  id       String   @id @default(uuid())
-  firstName String
-  lastName  String
-  email     String   @unique
-  phone     String?
+  id          Int       @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String    @unique
+  phone       String?
   dateOfBirth DateTime?
   street      String?
   city        String?
   postalCode  String?
   country     String?
+
+  projects Project[]
 }
 
-//String   @id @default(uuid())
+model Project {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  status      String
+  deadline    String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-model FileMetadata{
-  id Int @id @default(autoincrement())
-  project_id String
-  file_name String
-  file_path String
-  file_type String
-  file_size Int
-  base64 String
-  uploaded_by String
-  updated_at DateTime @updatedAt
-  download_url String 
+  clientId Int
+  client   Client @relation(fields: [clientId], references: [id])
 }
