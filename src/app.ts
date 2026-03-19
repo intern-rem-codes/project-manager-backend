@@ -3,7 +3,6 @@ import cors from "cors";
 import userRoutes from "./routes/user.routes";
 import clientRoutes from "./routes/client.routes";
 import projectRoutes from "./routes/project.routes";
-import filemetadataRoutes from "./routes/filemetadata.routes";
 import { createUser } from "./controllers/user.controller";
 const app = express();
 
@@ -18,7 +17,6 @@ app.use(express.json());
 app.use("/users", userRoutes);
 app.use("/clients", clientRoutes);
 app.use("/projects", projectRoutes);
-app.use("/filemetadata", filemetadataRoutes);
 app.use("/uploads", express.static("uploads"));
 
 // CREATE = POST
@@ -37,14 +35,16 @@ app.post("/create", createUser);
 // ERROR HANDLING //
 ///////////////
 
-app.use((
-  err: unknown,
-  req: express.Request,
-  res: express.Response,
-  _next: express.NextFunction,
-) => {
-  console.error(err instanceof Error ? err.stack : err);
-  return res.status(500).json({ message: "Internal Server Error" });
-});
+app.use(
+  (
+    err: unknown,
+    req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction,
+  ) => {
+    console.error(err instanceof Error ? err.stack : err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  },
+);
 
 export default app;
