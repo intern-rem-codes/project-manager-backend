@@ -74,13 +74,22 @@ export const updateClient = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Fout bij updaten client" });
   }
 };
-export const deleteClient = async (
-  req: Request<{ id: number }>,
-  res: Response,
-) => {
+export const deleteClient = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
 
+    const existingProjects = await prisma.project.findMany({
+      where: {
+        clientId: id,
+      },
+    });
+
+    if (existingProjects.length > 0) {
+      return res.status(400).json({
+        error:
+          "Client kan niet worden verwijderd omdat er projecten aan gekoppeld zijn.",
+      });
+    }
     await prisma.client.delete({
       where: { id },
     });

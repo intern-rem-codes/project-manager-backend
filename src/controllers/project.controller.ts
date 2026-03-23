@@ -23,7 +23,7 @@ export const createProject = async (req: Request, res: Response) => {
       description,
       status,
       deadline,
-      client: { connect: { id: clientId } },
+      client: { connect: { id: Number(clientId) } },
       created_at: new Date(),
       updated_at: new Date(),
     },
