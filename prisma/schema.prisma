@@ -8,10 +8,29 @@ generator client {
   output   = "../node_modules/.prisma/client"
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+  id           Int    @id @default(autoincrement())
+  name         String
+  email        String @unique
+  passwordHash String @default("")
+  lastName     String?
+  phone        String?
+  street       String?
+  city         String?
+  postalCode   String?
+  country      String?
+
+  role             UserRole @default(USER)
+  isActive         Boolean  @default(true)
+  personalClientId Int?
+  personalClient   Client?  @relation("PersonalClient", fields: [personalClientId], references: [id])
+
+  projects Project[] @relation("OwnerProjects")
 }
 
 model Client {
@@ -26,6 +45,7 @@ model Client {
   postalCode  String?
   country     String?
 
+  personalFor User[] @relation("PersonalClient")
   projects Project[]
 }
 
@@ -40,4 +60,7 @@ model Project {
 
   clientId Int
   client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  ownerId Int?
+  owner   User? @relation("OwnerProjects", fields: [ownerId], references: [id], onDelete: SetNull)
 }

@@ -8,17 +8,20 @@ const cors_1 = __importDefault(require("cors"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const client_routes_1 = __importDefault(require("./routes/client.routes"));
 const project_routes_1 = __importDefault(require("./routes/project.routes"));
-const filemetadata_routes_1 = __importDefault(require("./routes/filemetadata.routes"));
+const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
+const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const user_controller_1 = require("./controllers/user.controller");
+const auth_1 = require("./middleware/auth");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: "http://localhost:5173",
 }));
 app.use(express_1.default.json());
 app.use("/users", user_routes_1.default);
-app.use("/clients", client_routes_1.default);
-app.use("/projects", project_routes_1.default);
-app.use("/filemetadata", filemetadata_routes_1.default);
+app.use("/auth", auth_routes_1.default);
+app.use("/admin", admin_routes_1.default);
+app.use("/clients", auth_1.requireAuth, auth_1.requireAdmin, client_routes_1.default);
+app.use("/projects", auth_1.requireAuth, project_routes_1.default);
 app.use("/uploads", express_1.default.static("uploads"));
 // CREATE = POST
 // READ = GET

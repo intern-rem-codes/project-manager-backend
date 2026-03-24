@@ -4,10 +4,14 @@ import {
   getUser,
   createUser,
   updateUser,
+  changePassword,
   deleteUser,
 } from "../controllers/user.controller";
+import { requireAuth } from "../middleware/auth";
 
 const router = Router();
+
+router.use(requireAuth);
 
 // READ all users
 router.get("/", getUsers);
@@ -18,6 +22,8 @@ router.post("/", createUser);
 // UPDATE a user (full or partial)
 router.put("/:id", updateUser);
 router.patch("/:id", updateUser);
+// CHANGE password
+router.put("/:id/password", changePassword);
 // DELETE a user
 router.delete("/:id", deleteUser);
 

@@ -3,7 +3,10 @@ import cors from "cors";
 import userRoutes from "./routes/user.routes";
 import clientRoutes from "./routes/client.routes";
 import projectRoutes from "./routes/project.routes";
+import authRoutes from "./routes/auth.routes";
+import adminRoutes from "./routes/admin.routes";
 import { createUser } from "./controllers/user.controller";
+import { requireAdmin, requireAuth } from "./middleware/auth";
 const app = express();
 
 app.use(
@@ -15,8 +18,10 @@ app.use(
 app.use(express.json());
 
 app.use("/users", userRoutes);
-app.use("/clients", clientRoutes);
-app.use("/projects", projectRoutes);
+app.use("/auth", authRoutes);
+app.use("/admin", adminRoutes);
+app.use("/clients", requireAuth, requireAdmin, clientRoutes);
+app.use("/projects", requireAuth, projectRoutes);
 app.use("/uploads", express.static("uploads"));
 
 // CREATE = POST
