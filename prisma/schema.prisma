@@ -31,6 +31,8 @@ model User {
   personalClient   Client?  @relation("PersonalClient", fields: [personalClientId], references: [id])
 
   projects Project[] @relation("OwnerProjects")
+
+  uploadedFiles ProjectFile[]
 }
 
 model Client {
@@ -63,4 +65,21 @@ model Project {
 
   ownerId Int?
   owner   User? @relation("OwnerProjects", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  files ProjectFile[]
+}
+
+model ProjectFile {
+  id           Int      @id @default(autoincrement())
+  originalName String
+  storedName   String
+  mimeType     String
+  size         Int
+  createdAt    DateTime @default(now())
+
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  uploadedById Int?
+  uploadedBy   User? @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
 }

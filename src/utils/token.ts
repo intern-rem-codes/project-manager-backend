@@ -7,6 +7,12 @@ type Payload = {
 };
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET ?? "dev-secret-change-me";
+const DEFAULT_TTL_SECONDS = (() => {
+  const raw = process.env.TOKEN_TTL_SECONDS;
+  if (!raw) return 60 * 60; // 1 hour
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 60 * 60;
+})();
 
 function base64urlEncode(input: Buffer | string) {
   const buf = typeof input === "string" ? Buffer.from(input) : input;
@@ -28,7 +34,10 @@ function sign(data: string) {
   return base64urlEncode(crypto.createHmac("sha256", TOKEN_SECRET).update(data).digest());
 }
 
-export function createToken(payload: Omit<Payload, "exp">, ttlSeconds = 60 * 60 * 24) {
+export function createToken(
+  payload: Omit<Payload, "exp">,
+  ttlSeconds = DEFAULT_TTL_SECONDS,
+) {
   const full: Payload = {
     ...payload,
     exp: Math.floor(Date.now() / 1000) + ttlSeconds,
@@ -53,4 +62,3 @@ export function verifyToken(token: string): Payload | null {
     return null;
   }
 }
-

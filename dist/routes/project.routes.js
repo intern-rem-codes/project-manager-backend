@@ -1,7 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const project_controller_1 = require("../controllers/project.controller");
+const upload_1 = __importDefault(require("../middleware/upload"));
+const projectFiles_controller_1 = require("../controllers/projectFiles.controller");
 const router = (0, express_1.Router)();
 router.get("/", project_controller_1.getProjects);
 router.get("/:id", project_controller_1.getProject);
@@ -9,4 +14,7 @@ router.post("/", project_controller_1.createProject);
 router.put("/:id", project_controller_1.updateProject);
 router.patch("/:id", project_controller_1.updateProject);
 router.delete("/:id", project_controller_1.deleteProject);
+router.get("/:id/files", projectFiles_controller_1.listProjectFiles);
+router.post("/:id/files", upload_1.default.single("file"), projectFiles_controller_1.uploadProjectFile);
+router.delete("/:id/files/:fileId", projectFiles_controller_1.deleteProjectFile);
 exports.default = router;

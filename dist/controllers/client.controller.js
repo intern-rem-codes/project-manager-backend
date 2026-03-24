@@ -57,14 +57,69 @@ exports.getClientById = getClientById;
 const updateClient = async (req, res) => {
     try {
         const id = Number(req.params.id);
+        const { firstName, lastName, email, phone, dateOfBirth, street, city, postalCode, country, } = req.body;
+        if (!Number.isFinite(id)) {
+            return res.status(400).json({ message: "Ongeldige client id" });
+        }
+        if (typeof firstName !== "string" || !firstName.trim()) {
+            return res.status(400).json({ message: "Voornaam is verplicht" });
+        }
+        if (typeof lastName !== "string") {
+            return res.status(400).json({ message: "Achternaam is verplicht" });
+        }
+        if (typeof email !== "string" || !email.trim()) {
+            return res.status(400).json({ message: "E-mailadres is verplicht" });
+        }
+        const phoneValue = typeof phone === "string" && phone.trim() ? phone.trim() : null;
+        const streetValue = typeof street === "string" && street.trim() ? street.trim() : null;
+        const cityValue = typeof city === "string" && city.trim() ? city.trim() : null;
+        const postalCodeValue = typeof postalCode === "string" && postalCode.trim() ? postalCode.trim() : null;
+        const countryValue = typeof country === "string" && country.trim() ? country.trim() : null;
+        let dobValue = null;
+        if (dateOfBirth === null || dateOfBirth === undefined || dateOfBirth === "") {
+            dobValue = null;
+        }
+        else if (typeof dateOfBirth === "string") {
+            const parsed = new Date(dateOfBirth);
+            if (Number.isNaN(parsed.getTime())) {
+                return res.status(400).json({ message: "Ongeldige geboortedatum" });
+            }
+            dobValue = parsed;
+        }
+        else {
+            return res.status(400).json({ message: "Ongeldige geboortedatum" });
+        }
         const updatedClient = await prisma_1.default.client.update({
             where: { id },
-            data: req.body,
+            data: {
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                email: email.trim(),
+                phone: phoneValue,
+                dateOfBirth: dobValue,
+                street: streetValue,
+                city: cityValue,
+                postalCode: postalCodeValue,
+                country: countryValue,
+            },
         });
         res.json(updatedClient);
     }
     catch (error) {
-        res.status(500).json({ error: "Fout bij updaten client" });
+        if (typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            error.code === "P2002") {
+            return res.status(409).json({ message: "E-mailadres is al in gebruik" });
+        }
+        if (typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            error.code === "P2025") {
+            return res.status(404).json({ message: "Client niet gevonden" });
+        }
+        console.error(error);
+        res.status(500).json({ message: "Fout bij updaten client" });
     }
 };
 exports.updateClient = updateClient;

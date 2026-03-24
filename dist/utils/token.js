@@ -7,6 +7,13 @@ exports.createToken = createToken;
 exports.verifyToken = verifyToken;
 const crypto_1 = __importDefault(require("crypto"));
 const TOKEN_SECRET = process.env.TOKEN_SECRET ?? "dev-secret-change-me";
+const DEFAULT_TTL_SECONDS = (() => {
+    const raw = process.env.TOKEN_TTL_SECONDS;
+    if (!raw)
+        return 60 * 60; // 1 hour
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 60 * 60;
+})();
 function base64urlEncode(input) {
     const buf = typeof input === "string" ? Buffer.from(input) : input;
     return buf
@@ -24,7 +31,7 @@ function base64urlDecode(input) {
 function sign(data) {
     return base64urlEncode(crypto_1.default.createHmac("sha256", TOKEN_SECRET).update(data).digest());
 }
-function createToken(payload, ttlSeconds = 60 * 60 * 24) {
+function createToken(payload, ttlSeconds = DEFAULT_TTL_SECONDS) {
     const full = {
         ...payload,
         exp: Math.floor(Date.now() / 1000) + ttlSeconds,
